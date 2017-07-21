@@ -39,6 +39,7 @@ function Jeff() {
 	// Parameters applying to the file group being processed
 	this._fileGroupName          = undefined; // Name
 	this._fileGroupRatio         = undefined; // Export ratio
+	this._header		 		= undefined;
 	this._swfObjectsPerFileGroup = undefined; // Array holding swf objects per file
 	this._swfObjects             = undefined; // Merged swf objects
 	this._symbolList             = undefined; // List of symbols to extract
@@ -242,6 +243,11 @@ Jeff.prototype._parseFile = function (swfName, nextSwfCb) {
 
 					// TODO: handle header
 					if (swfObject.type === 'header') {
+						self._header = {
+							frameRate: swfObject.frameRate,
+							frameSize: [ (swfObject.frameSize.right - swfObject.frameSize.left) / 20,
+										 (swfObject.frameSize.bottom - swfObject.frameSize.top) / 20 ]
+						};
 						return;
 					}
 
@@ -429,7 +435,8 @@ Jeff.prototype._generateExportData = function (graphicProperties, imageNames) {
 	var exportProperties = {
 		app: 'https://www.npmjs.com/package/jeff',
 		version: '0.2.2', // TODO: fetch version number automatically from package.json
-		frameRate: 25,
+		frameRate: this._header.frameRate,
+		frameSize: this._header.frameSize,
 		scale: this._options.ratio,
 		filtering: [this._options.minificationFilter, this._options.magnificationFilter],
 		mipmapCompatible: this._options.powerOf2Images,
