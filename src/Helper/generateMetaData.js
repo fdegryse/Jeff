@@ -14,7 +14,7 @@ function generateMetaData(symbols, symbolList, graphicProperties) {
 			symbolData.isAnimation = true;
 			symbolData.children = JSON.parse(JSON.stringify(symbol.children));
 			symbolData.duration = symbol.duration;
-
+			
 			if (symbol.className) {
 				symbolData.className = symbol.className;
 				if (symbol.containerBounds) symbolData.containerBounds = symbol.containerBounds;
@@ -24,6 +24,11 @@ function generateMetaData(symbols, symbolList, graphicProperties) {
 				symbolData.scalingGrid = symbol.scalingGrid;
 			}
 
+			if(symbol.labels)
+			{
+				symbolData.labels = JSON.parse(JSON.stringify(symbol.labels));
+			}
+			
 			toExport = true;
 		}
 

@@ -234,6 +234,7 @@ function generateChildren(symbol, symbols) {
 	var objectData, objectId;
 	var depths = {}; // Contains element mapped by depth
 	var depth, d, depthArray, nDepths;
+	var labels = [];
 	var timeline = symbol.swfObject.timeline;
 	// var duration = timeline.length;
 	var duration = symbol.duration;
@@ -279,6 +280,12 @@ function generateChildren(symbol, symbols) {
 					// Replacing symbol id
 					morphedShapeReplacements.push({ depth: depth, morphId: morphedShapeId, originalId: childSymbol.id });
 				}
+			}
+			
+			var label = timeline[f].label;
+			if(label !== undefined)
+			{
+				labels.push({"frame": f, "label":label});
 			}
 		}
 
@@ -397,7 +404,13 @@ function generateChildren(symbol, symbols) {
 			objectLayerData[replacement.depth].id = replacement.originalId;
 		}
 	}
-
+	
+	// Labels
+	if(labels.length > 0)
+	{
+		symbol.labels = labels;
+	}
+	
 	// Ordering layers by depth
 	var orderedDepths = [];
 	for (d = 0, depthArray = Object.keys(depths), nDepths = depthArray.length; d < nDepths; d += 1) {
