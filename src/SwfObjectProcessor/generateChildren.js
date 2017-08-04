@@ -240,53 +240,51 @@ function generateChildren(symbol, symbols) {
 	var duration = symbol.duration;
 	for (f = 0; f < duration; f += 1) {
 
-		if (timeline[f] !== undefined) {
-			var displayList = timeline[f].displayList;
-			var morphedShapeReplacements = [];
-			for (d = 0, depthArray = Object.keys(displayList), nDepths = depthArray.length; d < nDepths; d += 1) {
-				depth = depthArray[d];
-				objectData = displayList[depth];
-				if (objectData === null) {
-					objectLayerData[depth] = null;
-					continue;
-				}
+		var displayList = timeline[f].displayList;
+		var morphedShapeReplacements = [];
+		for (d = 0, depthArray = Object.keys(displayList), nDepths = depthArray.length; d < nDepths; d += 1) {
+			depth = depthArray[d];
+			objectData = displayList[depth];
+			if (objectData === null) {
+				objectLayerData[depth] = null;
+				continue;
+			}
 
-				// objects are not redefined every frame
-				// In objectData, if an object remains unchanged from a frame A to a frame B then it does not appear in frame B
-				if (!objectLayerData[depth]) {
+			// objects are not redefined every frame
+			// In objectData, if an object remains unchanged from a frame A to a frame B then it does not appear in frame B
+			if (!objectLayerData[depth]) {
 
-					// no object was previously defined for the given depth
-					objectLayerData[depth] = objectData;
-				} else {
+				// no object was previously defined for the given depth
+				objectLayerData[depth] = objectData;
+			} else {
 
-					for (var a = 0, attributeArray = Object.keys(objectData), nAttributes = attributeArray.length; a < nAttributes; a += 1) {
-						var attribute = attributeArray[a];
+				for (var a = 0, attributeArray = Object.keys(objectData), nAttributes = attributeArray.length; a < nAttributes; a += 1) {
+					var attribute = attributeArray[a];
 
-						// the object attribute has changed
-						objectLayerData[depth][attribute] = objectData[attribute];
-					}
-				}
-
-				// Testing for special case when object is a morphing
-				objectData = objectLayerData[depth];
-				var childSymbol = symbols[objectData.id];
-
-				if (childSymbol && childSymbol.isMorphing) {
-					var ratio = objectData.ratio || 0;
-
-					// Creating a new graphic that correspond to interpolation of the morphing with respect to the given ratio
-					var morphedShapeId = createMorphedShape(symbols, childSymbol, ratio);
-
-					// Replacing symbol id
-					morphedShapeReplacements.push({ depth: depth, morphId: morphedShapeId, originalId: childSymbol.id });
+					// the object attribute has changed
+					objectLayerData[depth][attribute] = objectData[attribute];
 				}
 			}
-			
-			var label = timeline[f].label;
-			if(label !== undefined)
-			{
-				labels.push({"frame": f, "label":label});
+
+			// Testing for special case when object is a morphing
+			objectData = objectLayerData[depth];
+			var childSymbol = symbols[objectData.id];
+
+			if (childSymbol && childSymbol.isMorphing) {
+				var ratio = objectData.ratio || 0;
+
+				// Creating a new graphic that correspond to interpolation of the morphing with respect to the given ratio
+				var morphedShapeId = createMorphedShape(symbols, childSymbol, ratio);
+
+				// Replacing symbol id
+				morphedShapeReplacements.push({ depth: depth, morphId: morphedShapeId, originalId: childSymbol.id });
 			}
+		}
+		
+		var label = timeline[f].label;
+		if(label !== undefined)
+		{
+			labels.push({"frame": f, "label":label});
 		}
 
 		// Replacing IDs of morphed shapes

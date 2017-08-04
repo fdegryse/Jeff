@@ -150,7 +150,7 @@ SwfParser.prototype = {
 					return;
 				}
 			}
-			if (numTags > 0) timeline.push(frm);
+			timeline.push(frm);
 		} while (code);
 		this._generateWarnings();
 		this.onData(mainFrame);
