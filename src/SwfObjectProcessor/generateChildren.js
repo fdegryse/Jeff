@@ -258,6 +258,13 @@ function generateChildren(symbol, symbols) {
 				objectLayerData[depth] = objectData;
 			} else {
 
+				if(objectData.id !== undefined) {
+					// if the id is defined in the objectData, all effects properties must be reset
+					// TODO: maybe check other properties beside id, depth and matrix
+					objectLayerData[depth].cxform = undefined;
+					objectLayerData[depth].filters = undefined;
+					objectLayerData[depth].blendMode = undefined;
+				}
 				for (var a = 0, attributeArray = Object.keys(objectData), nAttributes = attributeArray.length; a < nAttributes; a += 1) {
 					var attribute = attributeArray[a];
 
