@@ -4,9 +4,10 @@ var electron = require('electron');
 
 var app = electron.app;
 var mainWindow = null;
+var debug = false;
 
 function createWindow () {
-	mainWindow = new electron.BrowserWindow({ width: 600, height: 600 });
+	mainWindow = new electron.BrowserWindow({ width: 600, height: 600, show:debug });
 
 	mainWindow.loadURL(url.format({
 		pathname: path.join(__dirname, 'app/index.html'),
@@ -14,7 +15,9 @@ function createWindow () {
 		slashes:  true
 	}));
 
-	mainWindow.webContents.openDevTools();
+	if (debug) {
+		mainWindow.webContents.openDevTools();
+	}
 
 	mainWindow.webContents.on('did-finish-load', function onReady() {
 		mainWindow.webContents.send('argv', JSON.stringify(process.argv));
@@ -26,7 +29,9 @@ function createWindow () {
 }
 
 exports.quit = function () {
-	app.quit();
+	if (!debug) {
+		app.quit();
+	}
 	mainWindow = null;
 }
 
