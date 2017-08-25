@@ -173,13 +173,13 @@ CanvasRenderer.prototype._drawShapes = function (shapes, canvas, context, transf
 	for (var idx = 0; idx < shapes.length; idx += 1) {
 		var fills = shapes[idx].fills;
 		var lines = shapes[idx].lines;
-
+		
 		// var doubleEdges = getDoubleEdges(canvas, context, transform, fills);
 		for (var f = 1; f < fills.length; f += 1) {
 			this._fillShapes(context, canvas, fills[f], transform, isMask);
 		}
 		// fixDoubleEdge(canvas, context, transform, doubleEdges);
-
+		
 		for (var l = 1; l < lines.length; l += 1) {
 			this._outlineShapes(context, lines[l], transform, isMask);
 		}
@@ -234,7 +234,7 @@ CanvasRenderer.prototype._outlineShapes = function (context, shapes, transform, 
 	if (!line) {
 		return;
 	}
-
+	
 	var pixelHinting = (line === undefined) ? false : ((line.pixelHinting === undefined) ? false : line.pixelHinting);
 	this._createPath(context, shapes, transform, pixelHinting);
 
@@ -317,14 +317,21 @@ CanvasRenderer.prototype._fillShapes = function (context, canvas, shapes, transf
 	if (!fill) {
 		return;
 	}
-
+	
 	var s, color, alpha, matrix;
 	context.save();
 	if (fill.type === undefined) {
 		this._createPath(context, shapes, transform, false);
 		alpha = isMask ? 1 : ((fill.alpha === undefined) ? 1 : fill.alpha);
-		context.fillStyle = 'rgba(' + fill.red + ',' + fill.green + ',' + fill.blue + ',' + alpha + ')';
-		context.fill();
+ 		context.fillStyle = 'rgba(' + fill.red + ',' + fill.green + ',' + fill.blue + ',' + alpha + ')';
+		context.fill("evenodd");
+		if(!isMask) {
+			// Improves upon the double-edge alpha problem.
+			context.clip();
+			context.lineWidth = 1;
+			context.strokeStyle = context.fillStyle;
+			context.stroke();
+		}
 	} else if (fill.type === 'pattern') {
 		matrix = fill.matrix;
 
@@ -342,7 +349,7 @@ CanvasRenderer.prototype._fillShapes = function (context, canvas, shapes, transf
 		imgContext.setTransform(1, 0, 0, 1, 0, 0);
 		this._createPath(imgContext, shapes, transform, false);
 		imgContext.fillStyle = '#00ff00';
-		imgContext.fill();
+		imgContext.fill("evenodd");
 
 		context.drawImage(imgCanvas, 0, 0);
 	} else {
@@ -376,7 +383,15 @@ CanvasRenderer.prototype._fillShapes = function (context, canvas, shapes, transf
 		}
 
 		context.fillStyle = gradient;
-		context.fill();
+		context.fill("evenodd");
+		
+		if(!isMask) {
+			// Improves upon the double-edge alpha problem.
+			context.clip();
+			context.lineWidth = 1;
+			context.strokeStyle = context.fillStyle;
+			context.stroke();
+		}
 	}
 
 	context.restore();
