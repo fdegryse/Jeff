@@ -53,7 +53,7 @@ function Jeff() {
 
 function JeffOptions(params) {
 	// Primary options
-	this.inputDir            = params.inputDir            || '.';
+	this.inputDir            = params.inputDir            || '';
 	this.outDir              = params.outDir              || null;
 	this.source              = params.source              || '*.swf';
 
@@ -142,7 +142,7 @@ Jeff.prototype._init = function (options, cb) {
 	this._extractedData = [];
 
 	// Making sure the input directory exists
-	if (this._options.outDir && !fs.existsSync(this._options.inputDir)) {
+	if (this._options.outDir && (this._options.inputDir.length !== 0 && !fs.existsSync(this._options.inputDir))) {
 		throw new Error('Directory not found: ' + this._options.inputDir);
 		return;
 	}
