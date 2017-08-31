@@ -11,7 +11,7 @@ function executeJeff(argv, cb) {
 
 	// Primary options
 	.option('-s, --source <src file/glob expression>',      'Source of the file(s) to export. Can be defined as a regular expression', '*.swf')
-	.option('-i, --inputDir <dir>',                         'Input directory, directory must exist', '.')
+	.option('-i, --inputDir <dir>',                         'Input directory, directory must exist', '')
 	.option('-o, --outDir <dir>',                           'Output directory', '.')
 
 	// Secondary options
