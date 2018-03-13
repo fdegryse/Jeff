@@ -37,6 +37,7 @@ function executeJeff(argv, cb) {
 	.option('-I, --ignoreImages <boolean>',                 'Not to export images', 'false')
 	.option('-F, --filtering <filtering method>',           'Filtering that should be used when rendering the animation', 'linear')
 	.option('-e, --outlineEmphasis <coefficient>',          'Emphasis of outlines when rendering Flash vectorial drawings', '1')
+	.option('-k, --keepLinkedSymbols <boolean>',            'Keep all linked symbols when simplifying animations', 'false')
 
 	.parse(argv);
 
@@ -68,7 +69,8 @@ function executeJeff(argv, cb) {
 		ignoreData:         JSON.parse(commander.ignoreData),
 		ignoreImages:       JSON.parse(commander.ignoreImages),
 		filtering:          commander.filtering,
-		outlineEmphasis:    JSON.parse(commander.outlineEmphasis)
+		outlineEmphasis:    JSON.parse(commander.outlineEmphasis),
+		keepLinkedSymbols:	JSON.parse(commander.keepLinkedSymbols)
 	};
 
 	// Creating a new Jeff

@@ -1,6 +1,6 @@
 'use strict';
 
-function simplifyAnimation(symbols) {
+function simplifyAnimation(symbols, keepLinkedSymbols) {
 	// TODO: improve it by simplifying every animation symbol containing a single child
 	
 	// Getting rid of unnecessary animations
@@ -18,7 +18,7 @@ function simplifyAnimation(symbols) {
 		if (symbol.isAnimation && symbol.children.length === 1) {
 			var child = symbol.children[0];
 
-			var discardable = true;
+			var discardable = !keepLinkedSymbols || undefined === symbol.className;
 			var transforms = child.transforms;
 
 			for (var t = 0; t < transforms.length && discardable; t += 1) {

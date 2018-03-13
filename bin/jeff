@@ -36,6 +36,7 @@ program
 .option('-I, --ignoreImages <boolean>',                 'Not to export images', 'false')
 .option('-F, --filtering <filtering method>',           'Filtering that should be used when rendering the animation', 'linear')
 .option('-e, --outlineEmphasis <coefficient>',          'Emphasis of outlines when rendering Flash vectorial drawings', '1')
+.option('-k, --keepLinkedSymbols <boolean>',            'Keep all linked symbols when simplifying animations', 'false')
 
 .parse(process.argv);
 
@@ -67,7 +68,8 @@ var exportParams = {
 	ignoreData:         JSON.parse(program.ignoreData),
 	ignoreImages:       JSON.parse(program.ignoreImages),
 	filtering:          program.filtering,
-	outlineEmphasis:    JSON.parse(program.outlineEmphasis)
+	outlineEmphasis:    JSON.parse(program.outlineEmphasis),
+	keepLinkedSymbols:	JSON.parse(program.keepLinkedSymbols)
 };
 
 // Creating a new Jeff

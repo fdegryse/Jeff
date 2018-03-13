@@ -81,6 +81,7 @@ function JeffOptions(params) {
 	this.minificationFilter  = params.minificationFilter  || 'linear';
 	this.magnificationFilter = params.magnificationFilter || 'linear';
 	this.outlineEmphasis     = params.outlineEmphasis     || 1;
+	this.keepLinkedSymbols   = params.keepLinkedSymbols   || false;
 
 	// Advanced++ options
 	// Not usable as command line options
@@ -454,8 +455,12 @@ Jeff.prototype._generateExportData = function (graphicProperties, imageNames) {
 		meta: exportProperties
 	};
 
-	if (this._options.flatten)  { exportSymbolsData = helper.flattenAnimations(exportSymbolsData); }
-	if (this._options.simplify) { exportSymbolsData = helper.simplifyAnimation(exportSymbolsData); }
+	if (this._options.flatten)  { 
+		exportSymbolsData = helper.flattenAnimations(exportSymbolsData); 
+	}
+	if (this._options.simplify) { 
+		exportSymbolsData = helper.simplifyAnimation(exportSymbolsData, this._options.keepLinkedSymbols); 
+	}
 	exportData.symbols = exportSymbolsData;
 
 	if (this._options.compressMatrices) {
