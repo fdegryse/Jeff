@@ -87,8 +87,22 @@ function createSymbol(swfObject) {
 		break;
 
 	case 'sprite':
+	
+		var duration = swfObject.frameCount;
+	
+		var hasDisplay = false;
+		for(var i = 0; i < duration && !hasDisplay; i += 1) {
+			for(var n in swfObject.timeline[i].displayList) {
+				hasDisplay = true;
+				break;
+			}
+		}
+		
+		if(!hasDisplay)
+			break;
+	
 		symbol.isAnimation = true;
-		symbol.duration = swfObject.frameCount;
+		symbol.duration = duration;
 
 		var scalingGrid = swfObject.scalingGrid;
 		if (scalingGrid) {
