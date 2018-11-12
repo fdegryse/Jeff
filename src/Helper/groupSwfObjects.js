@@ -18,7 +18,13 @@ function groupSwfObjects(swfObjectGroups) {
 		idOffset = swfObjects.length;
 
 		// Making a deep copy of swf objects with updated IDs
-		var updatedSwfObjects = JSON.parse(JSON.stringify(swfObjectGroups[g], updateId));
+		
+		var groupItems = swfObjectGroups[g];
+		var groupItemCount = groupItems.length;
+		var updatedSwfObjects = new Array(groupItemCount);
+		for(var i = 0; i < groupItemCount; ++i) {
+			updatedSwfObjects[i] = JSON.parse(JSON.stringify(groupItems[i], updateId));
+		}
 
 		var s, swfObject;
 		var nObjects = updatedSwfObjects.length;
