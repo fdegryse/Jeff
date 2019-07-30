@@ -15,41 +15,43 @@ function simplifyAnimation(symbols, keepLinkedSymbols) {
 	var symbol, id;
 	for (id in symbols) {
 		symbol = symbols[id];
+
 		if (symbol.isAnimation && symbol.children.length === 1) {
 			var child = symbol.children[0];
-
 			var discardable = !keepLinkedSymbols || undefined === symbol.className;
-			var transforms = child.transforms;
+			if(discardable) {
+				var transforms = child.transforms;
 
-			for (var t = 0; t < transforms.length && discardable; t += 1) {
-				var transform = transforms[t];
-				discardable = transform[0] === 1 && transform[1] === 0 && transform[2] === 0 && transform[3] === 1 && transform[4] === 0 && transform[5] === 0;
-			}
-
-			var colors = child.colors;
-			for (var c = 0; c < colors.length && discardable; c += 1) {
-				var color = colors[c];
-				discardable = color[0] === 1 && color[1] === 1 && color[2] === 1 && color[3] === 1 && color[4] === 0 && color[5] === 0 && color[6] === 0 && color[7] === 0;
-			}
-
-			if (discardable) {
-				var childSymbol = symbols[child.id];
-				if (!childSymbol) {
-					continue;
+				for (var t = 0; t < transforms.length && discardable; t += 1) {
+					var transform = transforms[t];
+					discardable = transform[0] === 1 && transform[1] === 0 && transform[2] === 0 && transform[3] === 1 && transform[4] === 0 && transform[5] === 0;
 				}
-				if (symbol.className && childSymbol.className) {
-					
-					var childCopy = {};
-					for(var n in childSymbol)
-					{
-						childCopy[n] = childSymbol[n];
-					}
-					childCopy.className = symbol.className;
-					symbols[id] = childCopy;
-				} else {
 
-					replacements[id] = child.id;
-					 childSymbol.className = symbol.className;
+				var colors = child.colors;
+				for (var c = 0; c < colors.length && discardable; c += 1) {
+					var color = colors[c];
+					discardable = color[0] === 1 && color[1] === 1 && color[2] === 1 && color[3] === 1 && color[4] === 0 && color[5] === 0 && color[6] === 0 && color[7] === 0;
+				}
+
+				if (discardable) {
+					var childSymbol = symbols[child.id];
+					if (!childSymbol) {
+						continue;
+					}
+					if (symbol.className && childSymbol.className) {
+						
+						var childCopy = {};
+						for(var n in childSymbol)
+						{
+							childCopy[n] = childSymbol[n];
+						}
+						childCopy.className = symbol.className;
+						symbols[id] = childCopy;
+					} else {
+
+						replacements[id] = child.id;
+						 childSymbol.className = symbol.className;
+					}
 				}
 			}
 		}
