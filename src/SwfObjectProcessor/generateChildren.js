@@ -519,7 +519,92 @@ function generateChildren(symbol, symbols) {
 	}
 }
 
-function generateAllChildren(symbols) {
+function removeEmptyChildren(symbols, keepLinkedSymbols) {
+	var outdated = [];
+	var pending = [];
+	
+	var nbSymbols = symbols.length;
+	for (var s = 0; s < nbSymbols; s += 1) {
+		outdated[s] = s;
+	}
+	
+	while(outdated.length > 0) {
+		for(var n in outdated) {
+			var symbol = symbols[outdated[n]];
+			
+			if((keepLinkedSymbols && undefined !== symbol.className) || !isSymbolEmpty(symbol)) {
+				continue;
+			}
+			
+			for(var p in pending) {
+				if(pending[p] == symbol.id) {
+					pending.splice(p, 1);
+					break;
+				}
+			}
+			
+			var parents = symbol.parents;
+			for(var p in parents) {
+				removeEmptyChildFromParent(symbol.id, symbols[p]);
+				pending.push(p);
+			}
+		}
+		
+		outdated = pending.slice();
+		pending = [];
+	}
+}
+
+function isSymbolEmpty(symbol) {
+	var children = symbol.children;
+	if(children !== undefined && children.length > 0) {
+		return false;
+	}
+	
+	var timeline = symbol.swfObject.timeline;
+	if(undefined == timeline) {
+		return false;
+	}
+	
+	var duration = symbol.duration; // var duration = timeline.length;
+	for (var f = 0; f < duration; f += 1) {
+		for(var n in timeline[f].displayList) {
+			return false;
+		}
+	}
+	
+	return true;
+}
+
+function removeEmptyChildFromParent(id, symbol) {
+	var children = symbol.children;
+	for(var n in children) {
+		if(children[n].id == id) {
+			children.splice(n, 1);
+			break;
+		}
+	}
+	
+	var timeline = symbol.swfObject.timeline;
+	if(undefined !== timeline) {
+		var duration = symbol.duration; // var duration = timeline.length;
+		for (var f = 0; f < duration; f += 1) {
+			var toRemove = [];
+			var displayList = timeline[f].displayList;
+			for(var n in displayList) {
+				var display = displayList[n];
+				if(null !== display && display.id == id) {
+					toRemove.push(n);
+				}
+			}
+			for(var n in toRemove) {
+				delete displayList[toRemove[n]];
+			}
+		}
+	}
+}
+
+function generateAllChildren(symbols, keepLinkedSymbols) {
 	var nbSymbols = symbols.length;
 	for (var s = 0; s < nbSymbols; s += 1) {
 		var symbol = symbols[s];
@@ -528,6 +613,7 @@ function generateAllChildren(symbols) {
 			generateChildren(symbol, symbols);
 		}
 	}
+	removeEmptyChildren(symbols);
 }
 
 module.exports = generateAllChildren;
