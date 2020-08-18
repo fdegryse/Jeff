@@ -249,36 +249,32 @@ function generateChildren(symbol, symbols) {
 				objectLayerData[depth] = null;
 				continue;
 			}
-
+			
 			// objects are not redefined every frame
 			// In objectData, if an object remains unchanged from a frame A to a frame B then it does not appear in frame B
-			if (!objectLayerData[depth]) {
-
+			
+			var layerData = objectLayerData[depth];
+			if (!layerData) {
 				// no object was previously defined for the given depth
-				objectLayerData[depth] = objectData;
-			} else {
-
-				if(objectData.id !== undefined) {
-					// if the id is defined in the objectData, all effects properties must be reset
-					// TODO: maybe check other properties beside id, depth and matrix
-					objectLayerData[depth].cxform = undefined;
-					objectLayerData[depth].filters = undefined;
-					objectLayerData[depth].blendMode = undefined;
-				}
-				for (var a = 0, attributeArray = Object.keys(objectData), nAttributes = attributeArray.length; a < nAttributes; a += 1) {
+				layerData = objectLayerData[depth] = {};
+			} else if (objectData.resetDepth) {
+				for (var a = 0, attributeArray = Object.keys(layerData), nAttributes = attributeArray.length; a < nAttributes; a += 1) {
 					var attribute = attributeArray[a];
-
-					// the object attribute has changed
-					objectLayerData[depth][attribute] = objectData[attribute];
+					layerData[attribute] = undefined;
 				}
 			}
-
+			
+			for (var a = 0, attributeArray = Object.keys(objectData), nAttributes = attributeArray.length; a < nAttributes; a += 1) {
+				// the object attribute has changed
+				var attribute = attributeArray[a];
+				layerData[attribute] = objectData[attribute];
+			}
+			
 			// Testing for special case when object is a morphing
-			objectData = objectLayerData[depth];
-			var childSymbol = symbols[objectData.id];
-
+			
+			var childSymbol = symbols[layerData.id];
 			if (childSymbol && childSymbol.isMorphing) {
-				var ratio = objectData.ratio || 0;
+				var ratio = layerData.ratio || 0;
 
 				// Creating a new graphic that correspond to interpolation of the morphing with respect to the given ratio
 				var morphedShapeId = createMorphedShape(symbols, childSymbol, ratio);
@@ -319,11 +315,11 @@ function generateChildren(symbol, symbols) {
 					}
 				}
 
-				if (!objectTransform) {
-					objectTransform = { scaleX: 1, scaleY: 1, moveX: 0, moveY: 0, skewX: 0, skewY: 0 };
+				if (objectTransform) {
+					transforms = [objectTransform.scaleX, objectTransform.skewX, objectTransform.skewY, objectTransform.scaleY, objectTransform.moveX / 20, objectTransform.moveY / 20];
+				} else {
+					transforms = [1, 0, 0, 1, 0, 0];
 				}
-
-				transforms = [objectTransform.scaleX, objectTransform.skewX, objectTransform.skewY, objectTransform.scaleY, objectTransform.moveX / 20, objectTransform.moveY / 20];
 
 				if (objectColor) { // object color is not always defined
 					var rMult = objectColor.multR;
@@ -394,6 +390,7 @@ function generateChildren(symbol, symbols) {
 						&& p !== 'ratio'       // supported
 						&& p !== 'name'        // supported
 						&& p !== 'bitmapCache' // not supported, should it be? might improve extraction speed (it optimises blending operations)
+						&& p !== 'resetDepth'  // custom
 					) {
 						console.log('found unused property!', p, objectData[p], objectData.id);
 					}
@@ -402,7 +399,7 @@ function generateChildren(symbol, symbols) {
 				depths[depth][objectId].push(childData);
 			}
 		}
-
+		
 		// Setting IDs of morphed shape back to their orignal IDs
 		for (m = 0; m < morphedShapeReplacements.length; m += 1) {
 			replacement = morphedShapeReplacements[m];

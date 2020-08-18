@@ -776,8 +776,8 @@ SwfParser.prototype = {
 		var hasCharacter = flags  & f.HAS_CHARACTER;
 		var hasImage     = flags2 & f.HAS_IMAGE;
 		var baseClass    = ((flags2 & f.HAS_CLASS_NAME) || (hasImage && hasCharacter)) ? stream.readString : undefined;
-		var character    = { depth: depth, baseClass: baseClass };
-
+		var character    = { depth: depth, baseClass: baseClass, resetDepth: false };
+		
 		if (hasCharacter) {
 			var objId = stream.readUI16();
 			if (this._dictionary[objId]) {
@@ -789,6 +789,8 @@ SwfParser.prototype = {
 				//not handled has been skipped - or we are parsing in the wild...
 				console.warn(this.swfName + ': Sprite includes missing object ' + objId);
 			}
+			
+			character.resetDepth = (flags & f.MOVE) == 0;
 		}
 		if (flags  & f.HAS_MATRIX)            { character.matrix           = stream.readMatrix(); }
 		if (flags  & f.HAS_CXFORM)            { character.cxform           = stream.readCxformA(); }
