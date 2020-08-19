@@ -390,7 +390,7 @@ Jeff.prototype._canvasToPng = function (pngName, canvas) {
 	var url = canvas.toDataURL();
 	var header = 'data:image/png;base64,';
 	var len = header.length;
-	var png = new Buffer(url.substr(len), 'base64');
+	var png = Buffer.from(url.substr(len), 'base64');
 
 	if (this._options.imageQuality < 100) {
 		// TODO

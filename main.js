@@ -7,7 +7,15 @@ var mainWindow = null;
 var debug = false;
 
 function createWindow () {
-	mainWindow = new electron.BrowserWindow({ width: 600, height: 600, show:debug });
+	mainWindow = new electron.BrowserWindow({ 
+		width: 600,
+		height: 600,
+		show:debug,
+		webPreferences: {
+			nodeIntegration: true,
+			enableRemoteModule: true
+		}
+	});
 
 	mainWindow.loadURL(url.format({
 		pathname: path.join(__dirname, 'app/index.html'),
