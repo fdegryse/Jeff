@@ -46,7 +46,7 @@ function generateMetaData(symbols, symbolList, graphicProperties) {
 				symbolData.sw = properties.sw;
 				symbolData.sh = properties.sh;
 
-				toExport = true;
+				toExport = properties.sw > 0 && properties.sh > 0;
 			}
 		}
 

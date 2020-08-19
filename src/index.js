@@ -491,18 +491,8 @@ Jeff.prototype._generateJsonFileName = function () {
 	return path.join(this._options.outDir, jsonPath + '.json');
 };
 
-function rounding(key, val) {
-	if (typeof val === 'number') {
-		if (val === 0) return 0;
-		var powerOf10 = 1 + Math.max(Math.ceil(Math.log(Math.abs(val)) / Math.LN10), 2);
-		var roundCoef = Math.pow(10, powerOf10);
-		return Math.round(val * roundCoef) / roundCoef;
-	}
-	return val;
-}
-
 Jeff.prototype._dataToJson = function (jsonName, data) {
-	var jsonData = JSON.stringify(data, rounding);
+	var jsonData = JSON.stringify(data);
 
 	if (this._options.beautify) {
 		jsonData = beautify(jsonData, { indent_size: 4 });

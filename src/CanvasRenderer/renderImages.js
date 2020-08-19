@@ -111,12 +111,8 @@ CanvasRenderer.prototype._setGraphicDimensions = function (graphics, graphicMaxD
 		var maxWidth  = rendersImage ? w : graphicMaxDim.width;
 		var maxHeight = rendersImage ? h : graphicMaxDim.height;
 
-		var graphicWidth;
-		var graphicHeight;
 		if (maxWidth === 0 || maxHeight === 0) {
 			graphicRatio  = 0;
-			graphicWidth  = 1;
-			graphicHeight = 1;
 		} else {
 			var widthRatio   = w / maxWidth;
 			var heightRatio  = h / maxHeight;
@@ -126,14 +122,9 @@ CanvasRenderer.prototype._setGraphicDimensions = function (graphics, graphicMaxD
 			} else {
 				graphicRatio /= heightRatio;
 			}
-
-			graphicWidth  = Math.ceil(w * graphicRatio);
-			graphicHeight = Math.ceil(h * graphicRatio);
-
-			var ratioToMaxDim = Math.sqrt((this._options.maxImageDim * this._options.maxImageDim) / (graphicWidth * graphicHeight));
+			
+			var ratioToMaxDim = Math.sqrt((this._options.maxImageDim * this._options.maxImageDim) / (Math.ceil(w * graphicRatio) * Math.ceil(h * graphicRatio)));
 			if (ratioToMaxDim < 1) {
-				graphicWidth  *= ratioToMaxDim;
-				graphicHeight *= ratioToMaxDim;
 				graphicRatio  *= ratioToMaxDim;
 			}
 		}
@@ -146,8 +137,8 @@ CanvasRenderer.prototype._setGraphicDimensions = function (graphics, graphicMaxD
 			h:  h,
 			sx: 0,
 			sy: 0,
-			sw: graphicWidth,
-			sh: graphicHeight,
+			sw: w * graphicRatio,
+			sh: h * graphicRatio,
 			dx: x * graphicRatio,
 			dy: y * graphicRatio,
 			ratio:  graphicRatio,
@@ -176,7 +167,7 @@ function getGraphicsToRender(symbols, symbolList, images) {
 	}
 	return graphics;
 }
-var nBytes = 0;
+
 CanvasRenderer.prototype._renderGraphics = function (graphics, graphicDims, canvasses) {
 	for (var id in graphics) {
 		var canvas  = getCanvas();
@@ -185,9 +176,12 @@ CanvasRenderer.prototype._renderGraphics = function (graphics, graphicDims, canv
 		var graphic    = graphics[id];
 		var dimensions = graphicDims[id];
 
-		canvas.width  = dimensions.sw;
-		canvas.height = dimensions.sh;
-		nBytes += canvas.width * canvas.height * 4;
+		canvas.width  = Math.ceil(dimensions.sw);
+		canvas.height = Math.ceil(dimensions.sh);
+		
+		if(canvas.width == 0 || canvas.height == 0) {
+			continue;
+		}
 
 		if (graphic.isShape) {
 			var transform = [dimensions.ratio, 0, 0, dimensions.ratio, - dimensions.dx, - dimensions.dy];
@@ -282,9 +276,12 @@ CanvasRenderer.prototype._renderFrames = function (canvasses, graphicProperties)
 				var canvasName = this._options.onlyOneFrame ? symbol.className : symbol.frameNames[frame];
 				canvasses[canvasName] = canvas;
 				graphicProperties[canvasName] = {
-					x: x, y: y,
-					w: w, h: h,
-					sx: 0, sy: 0,
+					x: x,
+					y: y,
+					w: w,
+					h: h,
+					sx: 0,
+					sy: 0,
 					sw: canvas.width,
 					sh: canvas.height,
 					margin: 0
