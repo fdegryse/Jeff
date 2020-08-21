@@ -356,6 +356,16 @@ CanvasRenderer.prototype._fillShapes = function (context, canvas, shapes, transf
 		this._createPath(context, shapes, transform, false);
 
 		matrix = fill.matrix;
+		
+		// matrix can sometimes have a scale of zero
+		// flash seems to interpret this as an "infinite" size scale but canvas just doesn't render anything
+		if(matrix.scaleX == 0) {
+			matrix.scaleX = 1;
+		}
+		if(matrix.scaleY == 0) {
+			matrix.scaleY = 1;
+		}
+		
 		context.transform(transform[0], transform[1], transform[2], transform[3], transform[4], transform[5]);
 		context.transform(matrix.scaleX, matrix.skewX, matrix.skewY, matrix.scaleY, matrix.moveX, matrix.moveY);
 
