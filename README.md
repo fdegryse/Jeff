@@ -30,25 +30,27 @@ Go into JEFF directory and do:
 > npm install
 ```
 
+Since version 0.4.0, electron  9.2 minimum is required.
+
 ## Use
 Go into JEFF directory and do:
 	`electron . -s mySwf.swf -o outputPath`
 
 You can see all available options [here](https://github.com/Wizcorp/Jeff/blob/electron/bin/jeff).
 
+## Packaging
+For packaging Jeff into an application compatible with Windows and OSX systems, you will need Electron Packager.
+Go into JEFF directory and do:
 
-## Roadmap for unsupported features
-* Texts (Static/Dynamic)
-* Buttons
-* Embedded fonts
-* Sounds
-* ActionScript
+```
+> npm install electron-packager -g
+```
 
-## Roadmap for extract options
-* Option to extract shapes under vectorial format
-* Option to extract meta-data under keyframe based format (as opposed to per frame transformation matrix)
+In order to package the application, run:
 
-For contributors, see [Swf File Format Specifications](http://wwwimages.adobe.com/www.adobe.com/content/dam/Adobe/en/devnet/swf/pdf/swf-file-format-spec.pdf)
+```
+> electron-packager . Jeff --platform=win32,darwin --arch=x64 --out=outputPath --overwrite --prune --asar
+```
 
 ## Remarks
 Unlike the master branch, generated images are not compressed.
