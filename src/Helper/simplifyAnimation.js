@@ -38,20 +38,8 @@ function simplifyAnimation(symbols, keepLinkedSymbols) {
 					if (!childSymbol) {
 						continue;
 					}
-					if (symbol.className && childSymbol.className) {
-						
-						var childCopy = {};
-						for(var n in childSymbol)
-						{
-							childCopy[n] = childSymbol[n];
-						}
-						childCopy.className = symbol.className;
-						symbols[id] = childCopy;
-					} else {
-
-						replacements[id] = child.id;
-						 childSymbol.className = symbol.className;
-					}
+					replacements[id] = child.id;
+					childSymbol.className = symbol.className;
 				}
 			}
 		}
